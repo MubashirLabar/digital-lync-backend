@@ -1,0 +1,26 @@
+const express = require("express");
+const dotenv = require("dotenv");
+dotenv.config();
+const pool = require("./connection");
+const userRoutes = require("./routes/userRoutes");
+const contactRoutes = require("./routes/contactRoutes");
+const activityRoutes = require("./routes/activityRoutes");
+
+const app = express();
+app.use(express.json());
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`server is running on at http://localhost:${port}`);
+});
+
+pool.connect();
+
+app.get("/", (_, res) => {
+  res.send("Digital Lync Project is running...");
+});
+
+// Routes
+app.use("/api", userRoutes);
+app.use("/api", contactRoutes);
+app.use("/api", activityRoutes);
