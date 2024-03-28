@@ -1,4 +1,7 @@
+const sgMail = require("@sendgrid/mail");
 const pool = require("../connection");
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Create Task
 module.exports.createTask = async (req, res) => {
@@ -103,15 +106,27 @@ module.exports.getAllEvents = async (_, res) => {
 module.exports.createEmail = async (req, res) => {
   try {
     const { from, to, bcc, subject, detail } = req.body;
-
     const result = await pool.query(
       "INSERT INTO emails (sender, recipient, bcc, subject, detail, created_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING *",
       [from, to, bcc, subject, detail]
     );
 
+    const msg = {
+      to: to,
+      from: process.env.SENDER_EMAIL,
+      bcc: bcc,
+      subject: subject,
+      html: `
+        <p>Subject: ${subject}</p>
+        <p>Message: ${detail}</p>
+      `,
+    };
+
+    await sgMail.send(msg);
+
     res.status(201).json({
       success: true,
-      message: "Email created successfully.",
+      message: "Email created successfully and sent.",
       data: result.rows[0],
     });
   } catch (error) {

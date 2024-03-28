@@ -17,7 +17,7 @@ app.listen(port, () => {
 pool.connect();
 
 app.get("/", (_, res) => {
-  res.send("Digital Lync Project is running...");
+  res.send("Digital Lync Project is Running...");
 });
 
 // Routes
