@@ -6,14 +6,14 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // Create Task
 module.exports.createTask = async (req, res) => {
   try {
-    const { individual, due_date, name, assign_to } = req.body;
+    const { subject, due_date, priority, owner_id } = req.body;
 
     const result = await pool.query(
-      "INSERT INTO tasks (individual, due_date, name, assign_to, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *",
-      [individual, due_date, name, assign_to]
+      "INSERT INTO tasks (subject, due_date, priority, owner_id, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *",
+      [subject, due_date, priority, owner_id]
     );
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Task created successfully",
       data: result.rows[0],
@@ -30,11 +30,31 @@ module.exports.createTask = async (req, res) => {
 // Get All Tasks
 module.exports.getAllTasks = async (_, res) => {
   try {
-    pool.query(`SELECT * FROM tasks`, (err, result) => {
+    const query = `
+      SELECT tasks.*, users.id AS owner_id, users.username AS owner_username, users.name AS owner_name, users.phone AS owner_phone
+      FROM tasks 
+      INNER JOIN users ON tasks.owner_id = users.id
+      ORDER BY tasks.id ASC
+    `;
+    pool.query(query, (err, result) => {
       if (!err) {
-        res.status(201).json({
+        const tasks = result.rows.map((task) => {
+          // Remove duplicated from task and replace it with owner details
+          const { owner_id, owner_phone, owner_name, owner_username, ...rest } =
+            task;
+          return {
+            ...rest,
+            owner: {
+              id: owner_id,
+              username: task.owner_username,
+              name: task.owner_name,
+              phone: task.owner_phone,
+            },
+          };
+        });
+        res.status(200).json({
           success: true,
-          data: result.rows,
+          data: tasks,
         });
       } else {
         res.status(500).json({
@@ -53,18 +73,25 @@ module.exports.getAllTasks = async (_, res) => {
   }
 };
 
-// Create Event
-module.exports.createEvent = async (req, res) => {
+// Update Task
+module.exports.updateTask = async (req, res) => {
   try {
-    const { subject, start_date, end_date, start_time, end_time } = req.body;
+    const { id, subject, due_date, priority, owner_id } = req.body;
 
     const result = await pool.query(
-      "INSERT INTO events (subject, start_date, end_date, start_time, end_time, created_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING *",
-      [subject, start_date, end_date, start_time, end_time]
+      "UPDATE tasks SET subject = $1, due_date = $2, priority = $3, owner_id = $4 WHERE id = $5 RETURNING *",
+      [subject, due_date, priority, owner_id, id]
     );
-    res.status(201).json({
+
+    if (result.rows?.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Task not found.",
+      });
+    }
+    res.status(200).json({
       success: true,
-      message: "Event created successfully.",
+      message: "Task updated successfully.",
       data: result.rows[0],
     });
   } catch (error) {
@@ -76,14 +103,75 @@ module.exports.createEvent = async (req, res) => {
   }
 };
 
-// Get All Events
-module.exports.getAllEvents = async (_, res) => {
+// Delete Task
+module.exports.deleteTask = async (req, res) => {
   try {
-    pool.query("SELECT * FROM events", (err, result) => {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      "DELETE FROM tasks WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rows?.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Task not found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Task deleted successfully.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+// Create Meeting
+module.exports.createMeeting = async (req, res) => {
+  try {
+    const { name, location, from_date, to_date, host, participants } = req.body;
+
+    const result = await pool.query(
+      "INSERT INTO meetings (name, location, from_date, to_date, host, participants, created_at) VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING *",
+      [name, location, from_date, to_date, host, participants]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Meeting created successfully.",
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+// Get All Meetings
+module.exports.getAllMeetings = async (_, res) => {
+  try {
+    pool.query("SELECT * FROM meetings", (err, result) => {
       if (!err) {
-        res.status(201).json({
+        const meetings = result.rows.map((row) => {
+          return {
+            ...row,
+            participants: JSON.parse(row.participants),
+          };
+        });
+
+        res.status(200).json({
           success: true,
-          data: result.rows,
+          data: meetings,
         });
       } else {
         res.status(500).json({
@@ -124,7 +212,7 @@ module.exports.createEmail = async (req, res) => {
 
     await sgMail.send(msg);
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Email created successfully and sent.",
       data: result.rows[0],

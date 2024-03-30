@@ -4,17 +4,21 @@ const { verifyToken } = require("../services/authServices");
 const {
   createTask,
   getAllTasks,
-  createEvent,
-  getAllEvents,
+  updateTask,
+  deleteTask,
+  createMeeting,
+  getAllMeetings,
   createEmail,
   getAllEmails,
 } = require("../controllers/activityController");
 
 router.post("/create-task", verifyToken, createTask);
+router.post("/update-task", verifyToken, updateTask);
 router.get("/all-tasks", verifyToken, getAllTasks);
+router.get("/delete-task/:id", verifyToken, deleteTask);
 
-router.post("/create-event", verifyToken, createEvent);
-router.get("/all-events", verifyToken, getAllEvents);
+router.post("/create-meeting", verifyToken, createMeeting);
+router.get("/all-meetings", verifyToken, getAllMeetings);
 
 router.post("/create-email", verifyToken, createEmail);
 router.get("/all-emails", verifyToken, getAllEmails);
