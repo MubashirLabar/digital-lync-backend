@@ -5,12 +5,12 @@ const {
   createContact,
   getAllContacts,
   updateContact,
-  deleteContact,
+  deleteContacts,
 } = require("../controllers/contactController");
 
 router.post("/create-contact", verifyToken, createContact);
 router.post("/update-contact", verifyToken, updateContact);
 router.get("/all-contacts", verifyToken, getAllContacts);
-router.get("/delete-contact/:id", verifyToken, deleteContact);
+router.post("/delete-contacts", verifyToken, deleteContacts);
 
 module.exports = router;

@@ -104,13 +104,15 @@ module.exports.updateTask = async (req, res) => {
 };
 
 // Delete Task
-module.exports.deleteTask = async (req, res) => {
+module.exports.deleteTasks = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { ids } = req.body;
+
+    const placeholders = ids.map((id, index) => `$${index + 1}`).join(",");
 
     const result = await pool.query(
-      "DELETE FROM tasks WHERE id = $1 RETURNING *",
-      [id]
+      `DELETE FROM tasks WHERE id IN (${placeholders}) RETURNING *`,
+      ids
     );
 
     if (result.rows?.length === 0) {
@@ -122,7 +124,7 @@ module.exports.deleteTask = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Task deleted successfully.",
+      message: "Tasks deleted successfully.",
     });
   } catch (error) {
     console.log(error.message);
@@ -190,6 +192,65 @@ module.exports.getAllMeetings = async (_, res) => {
   }
 };
 
+// Update Meeting
+module.exports.updateMeeting = async (req, res) => {
+  try {
+    const { id, name, location, from_date, to_date, host, participants } =
+      req.body;
+
+    const result = await pool.query(
+      "UPDATE meetings SET name = $1, location = $2, from_date = $3, to_date = $4, host = $5, participants = $6 WHERE id = $7 RETURNING *",
+      [name, location, from_date, to_date, host, participants, id]
+    );
+
+    if (result.rows?.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Meeting not found.",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Meeting updated successfully.",
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+// Delete Meetings
+module.exports.deleteMeetings = async (req, res) => {
+  try {
+    const { ids } = req.body;
+
+    const placeholders = ids.map((id, index) => `$${index + 1}`).join(",");
+
+    const result = await pool.query(
+      `DELETE FROM meetings WHERE id IN (${placeholders}) RETURNING *`,
+      ids
+    );
+
+    if (result.rows?.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Meeting not found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Meeting deleted successfully.",
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
 // Create Email
 module.exports.createEmail = async (req, res) => {
   try {
@@ -247,6 +308,39 @@ module.exports.getAllEmails = async (req, res) => {
     res.status(500).json({
       success: false,
       error: `API Error: ${error.message}`,
+    });
+  }
+};
+
+// Update Email
+module.exports.deleteEmails = async (req, res) => {
+  try {
+    {
+      const { ids } = req.body;
+
+      const placeholders = ids.map((id, index) => `$${index + 1}`).join(",");
+
+      const result = await pool.query(
+        `DELETE FROM emails WHERE id IN (${placeholders}) RETURNING *`,
+        ids
+      );
+
+      if (result.rows?.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: "Email not found.",
+        });
+      }
+      res.status(200).json({
+        success: true,
+        message: "Email deleted successfully.",
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
     });
   }
 };

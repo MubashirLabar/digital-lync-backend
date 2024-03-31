@@ -116,26 +116,28 @@ module.exports.getAllContacts = async (_, res) => {
   }
 };
 
-// Delete Contact
-module.exports.deleteContact = async (req, res) => {
+// Delete Contacts
+module.exports.deleteContacts = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { ids } = req.body;
+
+    const placeholders = ids.map((id, index) => `$${index + 1}`).join(",");
 
     const result = await pool.query(
-      "DELETE FROM contacts WHERE id = $1 RETURNING *",
-      [id]
+      `DELETE FROM contacts WHERE id IN (${placeholders}) RETURNING *`,
+      ids
     );
 
     if (result.rows?.length === 0) {
       return res.status(404).json({
         success: false,
-        error: "Contact not found.",
+        error: "Contacts not found.",
       });
     }
 
     res.status(200).json({
       success: true,
-      message: "Contact deleted successfully.",
+      message: "Contacts deleted successfully.",
     });
   } catch (error) {
     console.error(error.message);
