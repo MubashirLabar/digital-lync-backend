@@ -6,21 +6,42 @@ const {
   createToken,
   comparePassword,
 } = require("../services/authServices");
+const { validateEmail } = require("../utils/common");
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Registration
 module.exports.register = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const hashed = await hashedPassword(password);
+    const { username, password, name, phone } = req.body;
 
+    // Check Validation
+    if (!validateEmail(username)) {
+      return res.status(400).json({
+        success: false,
+        error: "Please enter a valid username",
+      });
+    }
+
+    // Check if the username already exists
+    const existingUser = await pool.query(
+      "SELECT * FROM users WHERE username = $1",
+      [username]
+    );
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Username already exists. Please choose a different one.",
+      });
+    }
+
+    const hashed = await hashedPassword(password);
     const result = await pool.query(
-      "INSERT INTO users (username, password, created_at) VALUES ($1, $2, Now()) RETURNING *",
-      [username, hashed]
+      "INSERT INTO users (username, password, name, phone, created_at) VALUES ($1, $2, $3, $4, Now()) RETURNING *",
+      [username, hashed, name, phone]
     );
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "User created successfully.",
       data: result.rows[0],
@@ -39,6 +60,14 @@ module.exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // Check Validation
+    if (!validateEmail(username)) {
+      return res.status(400).json({
+        success: false,
+        error: "Please enter a valid username",
+      });
+    }
+
     const result = await pool.query("SELECT * FROM users WHERE username = $1", [
       username,
     ]);
@@ -55,7 +84,7 @@ module.exports.login = async (req, res) => {
 
     const token = createToken({ userId: user.id });
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "User login successfully",
       username: user.username,
@@ -74,6 +103,14 @@ module.exports.login = async (req, res) => {
 module.exports.forget = async (req, res) => {
   try {
     const { email } = req.body;
+
+    // Check Validation
+    if (!validateEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        error: "Please enter a valid email",
+      });
+    }
 
     const result = await pool.query("SELECT * FROM users WHERE username = $1", [
       email,
@@ -103,7 +140,7 @@ module.exports.forget = async (req, res) => {
 
     await sgMail.send(msg);
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Password reset link has been sent to your email",
     });
@@ -137,7 +174,7 @@ module.exports.resetPassword = async (req, res) => {
         .json({ message: "User with this email does not exist" });
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Password updated successfully",
     });
@@ -146,6 +183,31 @@ module.exports.resetPassword = async (req, res) => {
     if (error instanceof jwt.JsonWebTokenError) {
       return res.status(400).json({ message: "Invalid token" });
     }
+    res.status(500).json({
+      success: false,
+      error: `API Error: ${error.message}`,
+    });
+  }
+};
+
+// Get Users
+module.exports.getUsers = async (_, res) => {
+  try {
+    pool.query("SELECT id, username, name, phone FROM users", (err, result) => {
+      if (!err) {
+        res.status(200).json({
+          success: true,
+          data: result.rows,
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: err,
+        });
+      }
+    });
+    pool.end;
+  } catch (error) {
     res.status(500).json({
       success: false,
       error: `API Error: ${error.message}`,
