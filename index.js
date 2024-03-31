@@ -14,7 +14,9 @@ app.listen(port, () => {
   console.log(`server is running on at http://localhost:${port}`);
 });
 
-pool.connect();
+pool.connect().then((res) => console.log("postgres connection established",
+//res
+))
 
 app.get("/", (_, res) => {
   res.send("Digital Lync Project is Running...");
