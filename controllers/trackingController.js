@@ -14,7 +14,7 @@ module.exports.createTrack = async (req, res) => {
       address,
       note,
     } = req.body;
-    const imageUrl = await uploadToAzureBlobStorage(req.file);
+    //const imageUrl = await uploadToAzureBlobStorage(req.file);
     console.log("imageurl")
     const result = await pool.query(
       "INSERT INTO track (user_id, address, note, image_url, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *",
@@ -61,7 +61,7 @@ module.exports.getTracksByUserId = async (req, res) => {
 
 // Delete a track by id
 module.exports.deleteTrackById = async (req, res) => {
-    const trackId = req.params.id;
+    const trackId = req.body.id;
 
     try {
         const result = await pool.query("DELETE FROM track WHERE id = $1 RETURNING *", [trackId]);

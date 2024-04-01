@@ -11,9 +11,11 @@ const upload = multer({ dest: 'uploads/' })
 
 const { verifyToken } = require("../services/authServices");
 
-router.post("/tracks/create-track",upload.single('file'), createTrack);
+router.post("/tracks/create-track",
+upload.single('file'), 
+createTrack);
 router.get('/tracks/user/:userId', getTracksByUserId);
-router.delete('/tracks/:id', deleteTrackById);
+router.post('/tracks/deletetrackbyid', deleteTrackById);
 
 
 module.exports = router;
