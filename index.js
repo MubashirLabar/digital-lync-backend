@@ -5,6 +5,7 @@ const pool = require("./connection");
 const userRoutes = require("./routes/userRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const activityRoutes = require("./routes/activityRoutes");
+const trackingRoutes = require("./routes/trackingRoutes");
 
 const app = express();
 app.use(express.json());
@@ -26,3 +27,4 @@ app.get("/", (_, res) => {
 app.use("/api", userRoutes);
 app.use("/api", contactRoutes);
 app.use("/api", activityRoutes);
+app.use("/api", trackingRoutes);
