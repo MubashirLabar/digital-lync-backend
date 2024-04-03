@@ -11,9 +11,7 @@ const upload = multer({ dest: 'uploads/' })
 
 const { verifyToken } = require("../services/authServices");
 
-router.post("/tracks/create-track",
-upload.single('file'), 
-createTrack);
+router.post("/tracks/create-track",upload.single('file'), createTrack);
 router.get('/tracks/user/:userId', getTracksByUserId);
 router.post('/tracks/deletetrackbyid', deleteTrackById);
 
