@@ -145,10 +145,15 @@ module.exports.createMeeting = async (req, res) => {
       [name, location, from_date, to_date, host, participants]
     );
 
+    const response = {
+      ...result.rows[0],
+      participants: participants,
+    };
+
     res.status(200).json({
       success: true,
       message: "Meeting created successfully.",
-      data: result.rows[0],
+      data: response,
     });
   } catch (error) {
     console.log(error.message);
