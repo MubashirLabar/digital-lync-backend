@@ -41,6 +41,8 @@ module.exports.register = async (req, res) => {
       [username, hashed, name, phone]
     );
 
+    delete result.rows[0].password;
+
     res.status(200).json({
       success: true,
       message: "User created successfully.",
