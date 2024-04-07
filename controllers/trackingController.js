@@ -3,21 +3,16 @@ const { uploadToAzureBlobStorage } = require("../services/azure"); // Import you
 
 // Create Contact
 module.exports.createTrack = async (req, res) => {
-  //    if (!req.file) {
-  //     return res.status(400).send('No files were uploaded.');
-  //     }
+  if (!req.file) {
+    return res.status(400).send("No files were uploaded.");
+  }
   try {
     const { user_id, address, note } = req.body;
-    //const imageUrl = await uploadToAzureBlobStorage(req.file);
-    console.log("imageurl");
+    const imageUrl = await uploadToAzureBlobStorage(req.file);
+    console.log("imageurl", imageUrl);
     const result = await pool.query(
       "INSERT INTO track (user_id, address, note, image_url, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING *",
-      [
-        user_id,
-        address,
-        note,
-        "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg",
-      ]
+      [user_id, address, note, imageUrl]
     );
 
     res.status(200).json({
