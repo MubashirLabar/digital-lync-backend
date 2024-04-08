@@ -7,8 +7,10 @@ const contactRoutes = require("./routes/contactRoutes");
 const activityRoutes = require("./routes/activityRoutes");
 const trackingRoutes = require("./routes/trackingRoutes");
 const { swaggerDocs } = require("./utils/swagger");
+var cors = require('cors')
 
 const app = express();
+app.use(cors())
 app.use(express.json());
 const port = process.env.PORT || 3000;
 
