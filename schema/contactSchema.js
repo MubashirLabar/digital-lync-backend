@@ -139,6 +139,47 @@
  *                - data
  */
 
+// Get Single Contact Detail Schemas
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    ContactDetailResponse:
+ *      type: object
+ *      properties:
+ *        success:
+ *          type: boolean
+ *        message:
+ *          type: string
+ *        data:
+ *          type: object
+ *          properties:
+ *            id:
+ *              type: string
+ *            company_name:
+ *              type: string
+ *            contact_type:
+ *              type: string
+ *            phone_number:
+ *              type: string
+ *            email:
+ *              type: string
+ *            address:
+ *              type: string
+ *            tax_id:
+ *              type: string
+ *            description:
+ *              type: string
+ *            created_at:
+ *              type: string
+ *            person_name:
+ *              type: string
+ *        required:
+ *          - success
+ *          - message
+ *          - data
+ */
+
 // Delete Contact Schemas
 /**
  * @openapi

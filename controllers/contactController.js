@@ -116,6 +116,42 @@ module.exports.getAllContacts = async (_, res) => {
   }
 };
 
+// Get Single Contact Detail
+module.exports.getContactDetail = async (req, res) => {
+  const id = req?.params?.id;
+
+  if (id === ":id") {
+    return res.status(404).json({
+      success: false,
+      error: "Contact id is required.",
+    });
+  }
+
+  try {
+    const result = await pool.query("SELECT * FROM contacts WHERE id = $1", [
+      id,
+    ]);
+
+    if (result.rows?.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Contact not found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Contact detail fetched successfully",
+      data: result.rows[0],
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: `API Error: ${error.message}`,
+    });
+  }
+};
+
 // Delete Contacts
 module.exports.deleteContacts = async (req, res) => {
   try {

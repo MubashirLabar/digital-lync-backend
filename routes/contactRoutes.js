@@ -6,6 +6,7 @@ const {
   getAllContacts,
   updateContact,
   deleteContacts,
+  getContactDetail,
 } = require("../controllers/contactController");
 
 /**
@@ -75,6 +76,30 @@ router.post("/update-contact", verifyToken, updateContact);
  *         description: Success
  */
 router.get("/all-contacts", verifyToken, getAllContacts);
+
+/**
+ * @openapi
+ * '/api/contact/detail/{id}':
+ *  get:
+ *     tags:
+ *     - Contact Routes
+ *     summary: Delete contact by the contact id
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: The id of the contact
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *          application/json:
+ *           schema:
+ *              $ref: '#/components/schemas/ContactDetailResponse'
+ *       404:
+ *         description: Contact not found
+ */
+router.get("/contact/detail/:id", verifyToken, getContactDetail);
 
 /**
  * @openapi

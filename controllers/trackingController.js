@@ -1,7 +1,7 @@
 const pool = require("../connection");
 const { uploadToAzureBlobStorage } = require("../services/azure"); // Import your Azure Blob service
 
-// Create Contact
+// Create Track
 module.exports.createTrack = async (req, res) => {
   if (!req.file) {
     return res.status(400).send("No files were uploaded.");
@@ -17,7 +17,7 @@ module.exports.createTrack = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Contact created successfully.",
+      message: "Tracking created successfully.",
       data: result.rows[0],
     });
   } catch (error) {
@@ -52,7 +52,7 @@ module.exports.getTracksByUserId = async (req, res) => {
 
 // Delete a track by id
 module.exports.deleteTrackById = async (req, res) => {
-  const trackId = req.body.id;
+  const trackId = req.params.id;
 
   try {
     const result = await pool.query(

@@ -50,6 +50,39 @@
  *                - data
  */
 
+// Get Single Task Detail Schemas
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    TaskDetailResponse:
+ *      type: object
+ *      properties:
+ *        success:
+ *          type: boolean
+ *        message:
+ *          type: string
+ *        data:
+ *          type: object
+ *          properties:
+ *            id:
+ *              type: string
+ *            subject:
+ *              type: string
+ *            due_date:
+ *              type: string
+ *            priority:
+ *              type: string
+ *            owner_id:
+ *              type: string
+ *            created_at:
+ *              type: string
+ *        required:
+ *          - success
+ *          - message
+ *          - data
+ */
+
 // Update Task Schemas
 /**
  * @openapi

@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-
 const {
   register,
   login,
   forget,
   resetPassword,
   getUsers,
+  getUserDetail,
 } = require("../controllers/userController");
 const { verifyToken } = require("../services/authServices");
 
@@ -131,5 +131,29 @@ router.post("/reset-password", resetPassword);
  *         description: Success
  */
 router.get("/users", verifyToken, getUsers);
+
+/**
+ * @openapi
+ * '/api/user/detail/{id}':
+ *  get:
+ *     tags:
+ *     - Auth Routes
+ *     summary: Get a single user by the user id
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: The id of the user
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *          application/json:
+ *           schema:
+ *              $ref: '#/components/schemas/UserDetailResponse'
+ *       404:
+ *         description: User not found
+ */
+router.get("/user/detail/:id", verifyToken, getUserDetail);
 
 module.exports = router;

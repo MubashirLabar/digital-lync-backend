@@ -124,3 +124,34 @@
  *        message:
  *          type: string
  */
+
+// Get Single User Detail Schemas
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    UserDetailResponse:
+ *      type: object
+ *      properties:
+ *        success:
+ *          type: boolean
+ *        message:
+ *          type: string
+ *        data:
+ *          type: object
+ *          properties:
+ *            id:
+ *              type: string
+ *            username:
+ *              type: string
+ *            name:
+ *              type: string
+ *            phone:
+ *              type: string
+ *            created_at:
+ *              type: string
+ *        required:
+ *          - success
+ *          - message
+ *          - data
+ */

@@ -4,14 +4,17 @@ const { verifyToken } = require("../services/authServices");
 const {
   createTask,
   getAllTasks,
+  getTaskDetail,
   updateTask,
   deleteTasks,
   createMeeting,
   getAllMeetings,
+  getMeetingDetail,
   updateMeeting,
   deleteMeetings,
   createEmail,
   getAllEmails,
+  getEmailDetail,
   deleteEmails,
 } = require("../controllers/activityController");
 
@@ -85,6 +88,30 @@ router.get("/all-tasks", verifyToken, getAllTasks);
 
 /**
  * @openapi
+ * '/api/task/detail/{id}':
+ *  get:
+ *     tags:
+ *     - Task Routes
+ *     summary: Get a single task by the task id
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: The id of the task
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *          application/json:
+ *           schema:
+ *              $ref: '#/components/schemas/TaskDetailResponse'
+ *       404:
+ *         description: Contact not found
+ */
+router.get("/task/detail/:id", verifyToken, getTaskDetail);
+
+/**
+ * @openapi
  * '/api/delete-tasks':
  *  post:
  *     tags:
@@ -150,6 +177,30 @@ router.post("/create-meeting", verifyToken, createMeeting);
  *         description: Success
  */
 router.get("/all-meetings", verifyToken, getAllMeetings);
+
+/**
+ * @openapi
+ * '/api/meeting/detail/{id}':
+ *  get:
+ *     tags:
+ *     - Meeting Routes
+ *     summary: Get a single meeting by the meeting id
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: The id of the meeting
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *          application/json:
+ *           schema:
+ *              $ref: '#/components/schemas/MeetingDetailResponse'
+ *       404:
+ *         description: Contact not found
+ */
+router.get("/meeting/detail/:id", verifyToken, getMeetingDetail);
 
 /**
  * @openapi
@@ -245,6 +296,30 @@ router.post("/create-email", verifyToken, createEmail);
  *         description: Success
  */
 router.get("/all-emails", verifyToken, getAllEmails);
+
+/**
+ * @openapi
+ * '/api/email/detail/{id}':
+ *  get:
+ *     tags:
+ *     - Email Routes
+ *     summary: Get a single email by the email id
+ *     parameters:
+ *      - name: id
+ *        in: path
+ *        description: The id of the email
+ *        required: true
+ *     responses:
+ *       200:
+ *         description: Success
+ *         content:
+ *          application/json:
+ *           schema:
+ *              $ref: '#/components/schemas/EmailDetailResponse'
+ *       404:
+ *         description: Contact not found
+ */
+router.get("/email/detail/:id", verifyToken, getEmailDetail);
 
 /**
  * @openapi

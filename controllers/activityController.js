@@ -73,6 +73,40 @@ module.exports.getAllTasks = async (_, res) => {
   }
 };
 
+// Get Single Contact Detail
+module.exports.getTaskDetail = async (req, res) => {
+  const id = req?.params?.id;
+
+  if (id === ":id") {
+    return res.status(404).json({
+      success: false,
+      error: "Task id is required.",
+    });
+  }
+
+  try {
+    const result = await pool.query("SELECT * FROM tasks WHERE id = $1", [id]);
+
+    if (result.rows?.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Task not found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Task detail fetched successfully",
+      data: result.rows[0],
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: `API Error: ${error.message}`,
+    });
+  }
+};
+
 // Update Task
 module.exports.updateTask = async (req, res) => {
   try {
@@ -197,6 +231,47 @@ module.exports.getAllMeetings = async (_, res) => {
   }
 };
 
+// Get Single Meeting Detail
+module.exports.getMeetingDetail = async (req, res) => {
+  const id = req?.params?.id;
+
+  if (id === ":id") {
+    return res.status(404).json({
+      success: false,
+      error: "Meeting id is required.",
+    });
+  }
+
+  try {
+    const result = await pool.query("SELECT * FROM meetings WHERE id = $1", [
+      id,
+    ]);
+
+    if (result.rows?.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Meeting data not found.",
+      });
+    }
+
+    const response = {
+      ...result.rows[0],
+      participants: JSON.parse(result.rows[0].participants),
+    };
+
+    res.status(200).json({
+      success: true,
+      message: "Meeting detail fetched successfully",
+      data: response,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: `API Error: ${error.message}`,
+    });
+  }
+};
+
 // Update Meeting
 module.exports.updateMeeting = async (req, res) => {
   try {
@@ -309,6 +384,39 @@ module.exports.getAllEmails = async (req, res) => {
       }
     });
     pool.end;
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: `API Error: ${error.message}`,
+    });
+  }
+};
+
+// Get Single Email Detail
+module.exports.getEmailDetail = async (req, res) => {
+  const id = req?.params?.id;
+
+  if (id === ":id") {
+    return res.status(404).json({
+      success: false,
+      error: "Email id is required.",
+    });
+  }
+
+  try {
+    const result = await pool.query("SELECT * FROM emails WHERE id = $1", [id]);
+
+    if (result.rows?.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Email data not found.",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Email detail fetched successfully",
+      data: result.rows[0],
+    });
   } catch (error) {
     res.status(500).json({
       success: false,

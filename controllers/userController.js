@@ -192,23 +192,63 @@ module.exports.resetPassword = async (req, res) => {
   }
 };
 
-// Get Users
+// Get All Users
 module.exports.getUsers = async (_, res) => {
   try {
-    pool.query("SELECT id, username, name, phone FROM users", (err, result) => {
-      if (!err) {
-        res.status(200).json({
-          success: true,
-          data: result.rows,
-        });
-      } else {
-        res.status(500).json({
-          success: false,
-          error: err,
-        });
+    pool.query(
+      "SELECT id, username, name, phone, created_at FROM users",
+      (err, result) => {
+        if (!err) {
+          res.status(200).json({
+            success: true,
+            data: result.rows,
+          });
+        } else {
+          res.status(500).json({
+            success: false,
+            error: err,
+          });
+        }
       }
-    });
+    );
     pool.end;
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: `API Error: ${error.message}`,
+    });
+  }
+};
+
+// Get User Detail
+module.exports.getUserDetail = async (req, res) => {
+  const id = req.params.id;
+
+  if (id === ":id") {
+    return res.status(404).json({
+      success: false,
+      error: "User id is required.",
+    });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT id, username, name, phone, created_at FROM users WHERE id = $1",
+      [id]
+    );
+
+    if (result.rows?.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User detail fetched successfully",
+      data: result.rows[0],
+    });
   } catch (error) {
     res.status(500).json({
       success: false,

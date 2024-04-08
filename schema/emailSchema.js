@@ -75,3 +75,38 @@
  *        message:
  *          type: string
  */
+
+// Get Single Email Detail Schemas
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    EmailDetailResponse:
+ *      type: object
+ *      properties:
+ *        success:
+ *          type: boolean
+ *        message:
+ *          type: string
+ *        data:
+ *          type: object
+ *          properties:
+ *            id:
+ *              type: string
+ *            sender:
+ *              type: string
+ *            recipient:
+ *              type: array
+ *            bcc:
+ *              type: array
+ *            subject:
+ *              type: string
+ *            detail:
+ *              type: string
+ *            created_at:
+ *              type: string
+ *        required:
+ *          - success
+ *          - message
+ *          - data
+ */

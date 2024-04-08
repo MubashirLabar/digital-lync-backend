@@ -81,6 +81,52 @@
  *                - data
  */
 
+// Get Single Meeting Detail Schemas
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    MeetingDetailResponse:
+ *      type: object
+ *      properties:
+ *        success:
+ *          type: boolean
+ *        message:
+ *          type: string
+ *        data:
+ *          type: object
+ *          properties:
+ *            id:
+ *              type: string
+ *            name:
+ *              type: string
+ *            location:
+ *              type: string
+ *            from_date:
+ *              type: string
+ *            to_date:
+ *              type: string
+ *            host:
+ *              type: string
+ *            created_at:
+ *              type: string
+ *            participants:
+ *              type: object
+ *              properties:
+ *                user_id:
+ *                      type: string
+ *                username:
+ *                      type: string
+ *                name:
+ *                      type: string
+ *                phone:
+ *                      type: string
+ *        required:
+ *          - success
+ *          - message
+ *          - data
+ */
+
 // Update Meeting Schemas
 /**
  * @openapi
